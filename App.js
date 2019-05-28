@@ -1,57 +1,75 @@
 
-import React from 'react';
-import { FlatList, View, Text, Image, StyleSheet, SafeAreaView, Animated, Easing } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, View, Text, Image, StyleSheet, SafeAreaView, Animated, Easing, StatusBar, TouchableOpacity } from 'react-native';
+import MessageQueue from 'react-native/Libraries/BatchedBridge/MessageQueue.js';
+import { sort, shuffle } from './helpers';
+import List from './List';
 
-const data = require('./data/shows.json');
-console.log(data);
+const jsonData = require('./data/shows.json');
 
-class App extends React.Component {
-  constructor() {
-    super();
-    this.rotateValueHolder = new Animated.Value(0);
-  }
+const rotateValueHolder = new Animated.Value(0);
 
-  componentDidMount(){
-    this.startRotation();
-  }
-
-  startRotation(){
-    this.rotateValueHolder.setValue(0);
-    Animated.timing(this.rotateValueHolder, {
-      toValue: 1,
-      duration: 500,
-      easing: Easing.linear,
-      // useNativeDriver: true,
-    }).start(()=>this.startRotation());
-  }
-
-
-  render() {
-    const rotateDate = this.rotateValueHolder.interpolate({
-      inputRange: [0,1],
-      outputRange: ['0deg', '360deg'],
-    });
-
-    return (
-      <SafeAreaView style={styles.container}>
-        <FlatList data={data} keyExtractor={(item) => item.id.toString()} renderItem={({ item }) => {
-          return (
-            <View style={styles.card}>
-              <Text style={styles.title}>{item.name}</Text>
-              <Animated.Text style={[styles.season, {transform: [{rotate: rotateDate }]}]}>S{item.season}E{item.number}</Animated.Text>
-              <Image source={{ uri: item.image.medium }} style={styles.image} resizeMode="cover" />
-            </View>
-          )
-        }} />
-      </SafeAreaView>
-    )
-  }
+const startRotation = () => {
+  rotateValueHolder.setValue(0.0);
+  Animated.timing(rotateValueHolder, {
+    toValue: 1,
+    duration: 500,
+    easing: Easing.linear,
+    useNativeDriver: true,
+  }).start(() => startRotation())
 }
 
+const stopRotation = () => {
+  Animated.timing(rotateValueHolder).stop();
+}
+
+const rotateDate = rotateValueHolder.interpolate({
+  inputRange: [0, 1],
+  outputRange: ['0deg', '360deg'],
+});
+
+const App = () => {
+  const [data, setData] = useState(jsonData);
+
+  useEffect(() => {
+    startRotation();
+    return () => stopRotation();
+  }, [])
+
+  const handleSortButtonPress = () => {
+    setData(sort(data));
+    stopRotation();
+    // startRotation();
+  }
+
+  const handleShuffleButtonPress = () => {
+    setData(shuffle(data));
+    // startRotation();
+  }
+
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <List data={data} rotateDate={rotateDate} />
+      <View style={styles.buttonContainer}>
+        <Button handlePress={handleSortButtonPress} title="sort" />
+        <Button handlePress={handleShuffleButtonPress} title="shuffle" />
+      </View>
+    </SafeAreaView>
+  )
+}
+
+const Button = ({ handlePress, title }) => (
+  <TouchableOpacity style={styles.button} onPress={handlePress} >
+    <Text style={styles.buttonText}>{title}</Text>
+  </TouchableOpacity>
+)
+
 const styles = StyleSheet.create({
+  listContainer: {
+    height: 100,
+  },
   container: {
     backgroundColor: 'rgb(249,249,249)',
-    paddingTop: 20,
   },
   card: {
     backgroundColor: 'rgb(255,255,255)',
@@ -82,6 +100,21 @@ const styles = StyleSheet.create({
     width: 300,
     height: 200,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  button: {
+    width: '40%',
+    backgroundColor: 'rgb(50,50,200)',
+    alignItems: 'center',
+    justifyContent: 'center',
+
+  },
+  buttonText: {
+    color: '#fff',
+  }
 })
 
 export default App;
