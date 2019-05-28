@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, SafeAreaView, Animated, Easing, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Animated, Easing, TouchableOpacity, Platform } from 'react-native';
 import { sort, shuffle } from './helpers';
 import List from './List';
 
@@ -18,10 +18,6 @@ const startRotation = () => {
   }).start(() => startRotation())
 }
 
-const stopRotation = () => {
-  Animated.timing(rotateValueHolder).stop();
-}
-
 const rotateDate = rotateValueHolder.interpolate({
   inputRange: [0, 1],
   outputRange: ['0deg', '360deg'],
@@ -32,7 +28,6 @@ const App = () => {
 
   useEffect(() => {
     startRotation();
-    return () => stopRotation();
   }, [])
 
   const handleSortButtonPress = () => {
@@ -61,12 +56,6 @@ const Button = ({ handlePress, title }) => (
 )
 
 const styles = StyleSheet.create({
-  listContainer: {
-    height: 100,
-  },
-  container: {
-    backgroundColor: 'rgb(249,249,249)',
-  },
   buttonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
