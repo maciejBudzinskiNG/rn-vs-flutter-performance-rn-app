@@ -1,13 +1,12 @@
 
 import React, { useEffect, useState } from 'react';
-import { FlatList, View, Text, Image, StyleSheet, SafeAreaView, Animated, Easing, StatusBar, TouchableOpacity } from 'react-native';
-import MessageQueue from 'react-native/Libraries/BatchedBridge/MessageQueue.js';
+import { View, Text, Image, StyleSheet, SafeAreaView, Animated, Easing, TouchableOpacity, Platform } from 'react-native';
 import { sort, shuffle } from './helpers';
 import List from './List';
 
 const jsonData = require('./data/shows.json');
 
-const rotateValueHolder = new Animated.Value(0);
+const rotateValueHolder = new Animated.Value(0.0);
 
 const startRotation = () => {
   rotateValueHolder.setValue(0.0);
@@ -38,21 +37,18 @@ const App = () => {
 
   const handleSortButtonPress = () => {
     setData(sort(data));
-    stopRotation();
-    // startRotation();
   }
 
   const handleShuffleButtonPress = () => {
     setData(shuffle(data));
-    // startRotation();
   }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <List data={data} rotateDate={rotateDate} />
       <View style={styles.buttonContainer}>
-        <Button handlePress={handleSortButtonPress} title="sort" />
-        <Button handlePress={handleShuffleButtonPress} title="shuffle" />
+        <Button handlePress={handleShuffleButtonPress} title="Shuffle" />
+        <Button handlePress={handleSortButtonPress} title="Sort" />
       </View>
     </SafeAreaView>
   )
@@ -71,49 +67,36 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'rgb(249,249,249)',
   },
-  card: {
-    backgroundColor: 'rgb(255,255,255)',
-    marginHorizontal: 2,
-    marginVertical: 4,
-    padding: 10,
-    alignItems: 'center',
-    borderBottomLeftRadius: 4,
-    borderBottomRightRadius: 4,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-
-    elevation: 3,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  season: {
-    padding: 15,
-  },
-  image: {
-    width: 300,
-    height: 200,
-  },
   buttonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
+    marginTop: 8,
   },
   button: {
-    width: '40%',
-    backgroundColor: 'rgb(50,50,200)',
+    width: '50%',
+    backgroundColor: 'rgb(219,219,219)',
     alignItems: 'center',
     justifyContent: 'center',
-
+    height: 36,
+    borderRadius: 5,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 1,
+        },
+        shadowOpacity: 0.4,
+        shadowRadius: 2.22,
+      },
+      android: {
+        elevation: 3,
+      }
+    })
   },
   buttonText: {
-    color: '#fff',
+    opacity: 0.9,
   }
 })
 
