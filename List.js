@@ -10,7 +10,6 @@ const List = ({ data, rotateDate }) => {
 }
 
 const ListItem = React.memo(({ item, index, rotateDate }) => {
-    console.log('list item')
     const name = item.name;
     const season = item.season;
     const episode = item.number;
@@ -29,7 +28,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgb(255,255,255)',
         marginHorizontal: 2,
         marginVertical: 4,
-        padding: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
         alignItems: 'center',
         borderBottomLeftRadius: 4,
         borderBottomRightRadius: 4,
