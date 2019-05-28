@@ -10,7 +10,6 @@ const shuffle = list => {
 
 const sort = list => {
     list.sort((a, b) => a.id > b.id);
-    console.log(list[0]);
     return [...list];
 }
 
